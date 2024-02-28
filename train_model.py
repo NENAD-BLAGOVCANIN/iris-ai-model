@@ -4,6 +4,13 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import os
+
+
+current_dir = os.getcwd()
+model_filename = "iris_model.pth"
+model_path = os.path.join(current_dir, model_filename)
+
 
 class Model(nn.Module):
 
@@ -42,8 +49,6 @@ X = X.values
 y = y.values
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.002, random_state=41)
-#X_test = [-0.0853,  0.4510,  0.7752] 
-#y_test = 
 
 X_train = torch.FloatTensor(X_train)
 X_test = torch.FloatTensor(X_test)
@@ -77,24 +82,8 @@ for i in range(epochs):
     loss.backward()
     optimizer.step()
 
+print("Saving model...")
 
+torch.save(model.state_dict(), model_path)
 
-# Lets graph this out
-plt.plot(range(epochs), losses)
-plt.ylabel("loss/error")
-plt.xlabel("Epoch")
-
-custom_example = torch.FloatTensor([6.1, 3, 4.9, 1.8])  # Example values for features
-
-# Ensure the model is in evaluation mode
-model.eval()
-
-# Disable gradient calculation
-with torch.no_grad(): # disables back propagation
-    # Pass the custom example through the model
-    y_val = model.forward(custom_example)
-
-# Determine the predicted class
-predicted_class = torch.argmax(y_val)
-
-print(f'Predicted class: {predicted_class}')
+print("Model saved!")
